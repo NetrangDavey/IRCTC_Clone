@@ -1,44 +1,128 @@
-import { Redirect, Slot, Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
-
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
+import { Drawer } from 'expo-router/drawer';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useAuth } from '../../Contexts/AuthContext';
+import { Redirect, router } from 'expo-router';
+import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default function TabLayout() {
+export default function DrawerLayout() {
   const colorScheme = useColorScheme();
-  const {session}=useAuth();
-  console.log("Session Value: "+session);
+  const {logout,session} = useAuth();
+
+  const handleLogout = async() => {
+    // Add logout logic here
+    await logout();
+    
+  };
+
+  if (!session) {
+    return <Redirect href="/Login" />;
+  }
+
   return (
-    (session)?
-    <Tabs
+    <Drawer
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].primary,
+          elevation: 0,
+          shadowOpacity: 0,
+          
           },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+          fontSize: 20,
+        },
+        drawerStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].card,
+          width: '75%',
+        },
+        drawerActiveTintColor: Colors[colorScheme ?? 'light'].primary,
+        drawerInactiveTintColor: Colors[colorScheme ?? 'light'].text,
+        drawerLabelStyle: {
+          marginLeft: -20,
+          fontSize: 16,
+          fontWeight: '500',
+        },
+        drawerItemStyle: {
+          borderRadius: 8,
+          marginHorizontal: 8,
+        },
+        drawerActiveBackgroundColor: Colors[colorScheme ?? 'light'].primary + '15',
+        headerRight: () => (
+          <TouchableOpacity 
+            onPress={handleLogout}
+            style={styles.logoutButton}
+          >
+            <MaterialIcons name="logout" size={24} color="#fff" />
+          </TouchableOpacity>
+        ),
+      }}
+    >
+      <Drawer.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          drawerLabel: 'Home',
+          title: 'IRCTC',
+          headerTitle: () => (
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <MaterialIcons name="train" size={24} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>IRCTC</Text>
+            </View>
+          ),
+          drawerIcon: ({ color }) => (
+            <MaterialIcons name="home" size={24} color={color} />
+          ),
         }}
       />
-      
-    </Tabs>
-    :
-    <Redirect href={'/Login'} />
+      <Drawer.Screen
+        name="PNRStatus"
+        options={{
+          drawerLabel: 'PNRStatus',
+          title: 'PNRStatus',
+          drawerIcon: ({ color }) => (
+            <MaterialIcons name="account-circle" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="meals"
+        options={{
+          drawerLabel: 'Order Meals',
+          title: 'Order Meals',
+          drawerIcon: ({ color }) => (
+            <MaterialIcons name="train" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="pnr-status"
+        options={{
+          drawerLabel: 'PNR Status',
+          title: 'PNR Status',
+          drawerIcon: ({ color }) => (
+            <MaterialIcons name="confirmation-number" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="MyBookings"
+        options={{
+          drawerLabel: 'MyBookings',
+          title: 'MyBookings',
+          drawerIcon: ({ color }) => (
+            <MaterialIcons name="history" size={24} color={color} />
+          ),
+        }}
+      />
+    </Drawer>
   );
 }
+
+const styles = StyleSheet.create({
+  logoutButton: {
+    marginRight: 16,
+    padding: 8,
+  }
+});

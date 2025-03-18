@@ -1,6 +1,6 @@
 import { useContext,createContext,useState, useEffect } from "react";
 import Loader from "../components/Utilities/Loaders/Loader";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const AuthContext=createContext();
 
 
@@ -10,32 +10,33 @@ const AuthProvider=({children})=>{
     const [session,setSession]=useState(false);
     const [userInfo,setUserInfo]=useState(null);
 
-    // UseEffect
-    // useEffect(() => {
-    //     const checkSession = async () => {
-    //       try {
-    //         // const token = await AsyncStorage.getItem('authToken');
-    //         const token = "bdshskj";
-    //         if (token) {
-    //             setSession(true);
-    //         } else {
-    //             setSession(false);
-    //         }
-    //       } catch (error) {
-    //         console.error("Error checking session:", error);
-    //         setSession(false);
-    //       } finally {
-    //         setIsLoading(false); // Set loading to false after checking
-    //       }
-    //     };
-    
-    //     checkSession();
-    //   }, []);
+    useEffect(() => {
+        checkSession();
+    }, []);
 
+    const checkSession = async () => {
+        try {
+            setIsLoading(true);
+            const userSession = await AsyncStorage.getItem('userSession');
+            setSession(!!userSession);
+        } catch (error) {
+            console.error("Error checking session:", error);
+            setSession(false);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     // Functions
     const login=async (userName,Password)=>{
         setIsLoading(true);
+        // await AsyncStorage.setItem('userSession',true);
         setSession(true);
+        setIsLoading(false);
+    }
+    const logout=async ()=>{
+        setIsLoading(true);
+        await AsyncStorage.removeItem('userSession');
+        setSession(false);
         setIsLoading(false);
     }
     const register=async ()=>{
@@ -43,7 +44,7 @@ const AuthProvider=({children})=>{
     }
 
     // Veriables
-    const contextData={session,userInfo,login,register}
+    const contextData={session,userInfo,login,logout,register}
     return (
         <AuthContext.Provider value={contextData}>
             {
