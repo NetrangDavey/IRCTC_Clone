@@ -6,6 +6,9 @@ import { useAuth } from '../../Contexts/AuthContext';
 import { Redirect, router } from 'expo-router';
 import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 
+
+
+
 export default function DrawerLayout() {
   const colorScheme = useColorScheme();
   const {logout,session} = useAuth();

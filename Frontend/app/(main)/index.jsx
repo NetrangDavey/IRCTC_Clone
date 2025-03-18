@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Calendar } from 'react-native-calendars';
+import { Redirect, router } from 'expo-router';
 
 export default function index() {
     const [from, setFrom] = useState('');
@@ -218,7 +219,7 @@ export default function index() {
                     </View>
 
                     {/* Search Button */}
-                    <TouchableOpacity style={styles.searchButton}>
+                    <TouchableOpacity style={styles.searchButton} onPress={() => {router.push("/SearchTrains")}}>
                         <LinearGradient
                             colors={['#1e3c72', '#2a5298']}
                             style={styles.searchButtonGradient}
@@ -250,12 +251,12 @@ export default function index() {
                     <Text style={styles.sectionTitle}>Quick Actions</Text>
                     <View style={styles.actionGrid}>
                         {[
-                            { icon: 'confirmation-number', title: 'PNR Status' },
-                            { icon: 'event-available', title: 'My Bookings' },
-                            { icon: 'card-travel', title: 'Holiday Packages' },
-                            { icon: 'restaurant', title: 'Order Food' },
+                            { icon: 'confirmation-number', title: 'PNR Status',url:"/PNRStatus" },
+                            { icon: 'event-available', title: 'My Bookings' ,url:"/MyBookings"},
+                            { icon: 'card-travel', title: 'Holiday Packages',url:"" },
+                            { icon: 'restaurant', title: 'Order Food',url:"" },
                         ].map((action, index) => (
-                            <TouchableOpacity key={index} style={styles.actionItem}>
+                            <TouchableOpacity key={index} style={styles.actionItem} onPress={() => {router.push(action.url)}}> 
                                 <MaterialIcons name={action.icon} size={32} color={Colors.light.tint} />
                                 <Text style={styles.actionText}>{action.title}</Text>
                             </TouchableOpacity>
